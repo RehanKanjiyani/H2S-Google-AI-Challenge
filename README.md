@@ -1,28 +1,72 @@
-<<<<<<< HEAD
 <div align="center">
 <img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
 </div>
 
-# Run and deploy your AI Studio app
+# EcoTrack AI 🌱
 
-This contains everything you need to run your app locally.
+A carbon footprint awareness platform built for the H2S Google AI Challenge.
 
-View your app in AI Studio: https://ai.studio/apps/0fd51902-1f44-433d-9d93-a30f41a45d5c
+Created by Rehan Kanjiyani.
+
+## Live AI Studio Project
+
+https://ai.studio/apps/0fd51902-1f44-433d-9d93-a30f41a45d5c
+
+## Features
+
+- Carbon footprint calculator
+- AI-powered sustainability coach
+- Personalized eco recommendations
+- Achievement and badge system
+- Community leaderboard
+- Historical carbon tracking
+- Mobile responsive design
+- Local data persistence
+
+## Tech Stack
+
+- React
+- TypeScript
+- Vite
+- Node.js
+- Google Gemini API
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
+### Prerequisites
 
+- Node.js
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
-=======
-# H2S Google AI Challenge
+### Installation
 
-My submission repository for PromptWars Virtual.
+```bash
+npm install
+```
 
-Created by Rehan Kanjiyani.
->>>>>>> f35d7dff1f26b89875dc328b310a3d0352cc49bf
+Create a `.env.local` file and add:
+
+```env
+GEMINI_API_KEY=your_api_key_here
+```
+
+Run the development server:
+
+```bash
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+## Challenge Theme
+
+Carbon Footprint Awareness Platform
+
+Helping individuals understand, track, and reduce their environmental impact through actionable insights and AI-powered recommendations.
+
+## Author
+
+Rehan Kanjiyani
