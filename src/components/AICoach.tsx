@@ -316,38 +316,42 @@ export default function AICoach({
     <div className="space-y-6" id="ai-coach-root">
       
       {/* AI Coach Banner Status card */}
-      <div className="bg-linear-to-r from-emerald-800 to-teal-900 rounded-2xl p-6 text-white relative overflow-hidden shadow-md">
+      <section 
+        aria-labelledby="coach-banner-title" 
+        className="bg-linear-to-r from-emerald-800 to-teal-900 rounded-2xl p-6 text-white relative overflow-hidden shadow-md"
+      >
         <div className="absolute right-0 bottom-0 translate-x-12 translate-y-12 opacity-10">
-          <Sparkles className="w-64 h-64 text-white" />
+          <Sparkles className="w-64 h-64 text-white" aria-hidden="true" />
         </div>
 
         <div className="relative z-10 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2.5">
               <div className="p-2 bg-emerald-700/60 rounded-xl">
-                <Sparkles className="w-5 h-5 text-emerald-300 animate-pulse" />
+                <Sparkles className="w-5 h-5 text-emerald-300 animate-pulse" aria-hidden="true" />
               </div>
-              <h2 className="text-lg font-bold font-display tracking-wide">EcoTrack AI Susty Coach</h2>
+              <h2 id="coach-banner-title" className="text-lg font-bold font-display tracking-wide">EcoTrack AI Susty Coach</h2>
             </div>
             
             <button
               onClick={fetchAICoachInsights}
               disabled={loading}
-              className="flex items-center space-x-1.5 bg-emerald-700/60 hover:bg-emerald-600/70 text-emerald-100 px-3 py-1.5 rounded-lg text-xs transition duration-200"
+              aria-label="Refresh AI Coach Insights and suggestions"
+              className="flex items-center space-x-1.5 bg-emerald-700/60 hover:bg-emerald-600/70 text-emerald-100 px-3 py-1.5 rounded-lg text-xs transition duration-200 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-400"
             >
-              <RotateCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <RotateCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
               <span>{loading ? 'Analyzing...' : 'Refresh Insights'}</span>
             </button>
           </div>
 
-          <div>
+          <div aria-live="polite">
             <span className="text-emerald-300 text-xs font-semibold uppercase tracking-wider block mb-1">Coach Assessment</span>
             {feedback ? (
               <p className="text-sm font-medium text-slate-100 leading-relaxed max-w-3xl">
                 "{feedback.sustainabilityScoreText}"
               </p>
             ) : (
-              <div className="h-10 flex items-center">
+              <div className="h-10 flex items-center" aria-label="Loading smart suggestions">
                 <div className="w-2/3 h-4 bg-emerald-700/50 rounded-xs animate-pulse" />
               </div>
             )}
@@ -359,24 +363,25 @@ export default function AICoach({
             <span>Real-time environmental reasoning framework</span>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Main feedback body splitting suggestions and challenges */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Personalized Actions (Suggestions) Column */}
-        <div className="lg:col-span-2 space-y-4">
-          <h3 className="text-base font-semibold text-slate-800 flex items-center space-x-2 font-display">
-            <TrendingDown className="w-5 h-5 text-emerald-600" />
+        <section aria-labelledby="reduction-actions-heading" className="lg:col-span-2 space-y-4">
+          <h3 id="reduction-actions-heading" className="text-base font-semibold text-slate-800 flex items-center space-x-2 font-display">
+            <TrendingDown className="w-5 h-5 text-emerald-600" aria-hidden="true" />
             <span>Targeted Reduction Actions</span>
           </h3>
 
-          <div className="space-y-4">
+          <div className="space-y-4" aria-live="polite">
             {feedback ? (
               feedback.personalizedSuggestions.map((sug, idx) => (
-                <div 
+                <article 
                   key={idx}
                   className="bg-white border border-slate-100 rounded-2xl p-5 shadow-2xs hover:shadow-xs transition duration-200 flex flex-col justify-between"
+                  aria-labelledby={`suggestion-title-${idx}`}
                 >
                   <div className="flex items-start justify-between">
                     <div>
@@ -391,20 +396,20 @@ export default function AICoach({
                           {sug.complexity} complexity
                         </span>
                       </div>
-                      <h4 className="text-sm font-bold text-slate-800 mb-1">{sug.title}</h4>
+                      <h4 id={`suggestion-title-${idx}`} className="text-sm font-bold text-slate-800 mb-1">{sug.title}</h4>
                       <p className="text-xs text-slate-500 leading-normal">{sug.description}</p>
                     </div>
 
-                    <div className="bg-emerald-50 text-[#15803d] px-3 py-2 rounded-xl text-center shrink-0 ml-4 font-bold max-w-[120px]">
+                    <div className="bg-emerald-50 text-[#15803d] px-3 py-2 rounded-xl text-center shrink-0 ml-4 font-bold max-w-[120px]" aria-label={`CO2 reduction impact: ${sug.impact}`}>
                       <span className="block text-[9px] uppercase tracking-wider text-emerald-600">Impact</span>
                       <span className="text-[11px] font-semibold">{sug.impact}</span>
                     </div>
                   </div>
-                </div>
+                </article>
               ))
             ) : (
               [1, 2, 3].map((num) => (
-                <div key={num} className="bg-white rounded-2xl p-5 border border-slate-100 space-y-3 animate-pulse">
+                <div key={num} className="bg-white rounded-2xl p-5 border border-slate-100 space-y-3 animate-pulse" aria-hidden="true">
                   <div className="h-4 bg-slate-100 rounded-md w-1/4" />
                   <div className="h-6 bg-slate-100 rounded-md w-3/4" />
                   <div className="h-10 bg-slate-100 rounded-md w-full" />
@@ -420,11 +425,11 @@ export default function AICoach({
               <ul className="space-y-2.5">
                 {feedback ? feedback.tips.map((tip, i) => (
                   <li key={i} className="text-xs text-slate-600 leading-relaxed flex items-start space-x-2">
-                    <span className="text-emerald-500 font-bold shrink-0">•</span>
+                    <span className="text-emerald-500 font-bold shrink-0" aria-hidden="true">•</span>
                     <span>{tip}</span>
                   </li>
                 )) : (
-                  <li className="h-12 bg-slate-100 rounded-md animate-pulse" />
+                  <li className="h-12 bg-slate-100 rounded-md animate-pulse" aria-hidden="true" />
                 )}
               </ul>
             </div>
@@ -434,45 +439,47 @@ export default function AICoach({
               <ul className="space-y-2.5">
                 {feedback ? feedback.habitsRecommendations.map((rec, i) => (
                   <li key={i} className="text-xs text-slate-700 flex items-center space-x-2.5 font-medium">
-                    <div className="w-4 h-4 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center font-bold text-[9px]">
+                    <div className="w-4 h-4 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center font-bold text-[9px]" aria-hidden="true">
                       ✓
                     </div>
                     <span>{rec}</span>
                   </li>
                 )) : (
-                  <li className="h-12 bg-slate-100 rounded-md animate-pulse" />
+                  <li className="h-12 bg-slate-100 rounded-md animate-pulse" aria-hidden="true" />
                 )}
               </ul>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Daily Challenges Column */}
-        <div className="space-y-4" id="daily-challenges-column">
+        <section aria-labelledby="challenges-heading" className="space-y-4" id="daily-challenges-column">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold text-slate-800 flex items-center space-x-2 font-display">
-              <Award className="w-5 h-5 text-amber-500" />
+            <h3 id="challenges-heading" className="text-base font-semibold text-slate-800 flex items-center space-x-2 font-display">
+              <Award className="w-5 h-5 text-amber-500" aria-hidden="true" />
               <span>Daily Eco Challenges</span>
             </h3>
             
             <button 
               onClick={refreshChallenges}
               disabled={generatingChallenges}
-              className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-semibold transition"
+              aria-label="Refresh daily ecological challenges"
+              className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-semibold transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
             >
               {generatingChallenges ? 'Refreshing...' : 'New Challenges'}
             </button>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3" aria-live="polite">
             {stats.challenges.map((chal) => (
-              <div 
+              <article 
                 key={chal.id}
                 className={`border rounded-xl p-4 transition duration-200 flex flex-col justify-between h-40 ${
                   chal.completed 
                     ? 'bg-slate-50 border-slate-200 text-slate-400' 
                     : 'bg-white border-slate-100 text-slate-800 hover:border-emerald-300'
                 }`}
+                aria-labelledby={`chal-title-${chal.id}`}
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -482,12 +489,12 @@ export default function AICoach({
                     }`}>
                       {chal.difficulty.toUpperCase()} • {chal.category.toUpperCase()}
                     </span>
-                    <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                    <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md" aria-label={`${chal.points} experience points`}>
                       +{chal.points} XP
                     </span>
                   </div>
                   
-                  <h4 className={`text-xs font-bold mt-2 ${chal.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>
+                  <h4 id={`chal-title-${chal.id}`} className={`text-xs font-bold mt-2 ${chal.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>
                     {chal.title}
                   </h4>
                   <p className="text-[11px] text-slate-400 leading-normal mt-1 max-w-[240px]">
@@ -498,37 +505,39 @@ export default function AICoach({
                 <div className="pt-2 border-t border-slate-50 flex justify-end">
                   {chal.completed ? (
                     <div className="flex items-center space-x-1 text-emerald-600 text-xs font-bold font-sans">
-                      <Check className="w-3.5 h-3.5 stroke-[3px]" />
+                      <Check className="w-3.5 h-3.5 stroke-[3px]" aria-hidden="true" />
                       <span>Task Completed (+{chal.points} XP)</span>
                     </div>
                   ) : (
                     <button
                       onClick={() => onCompleteChallenge(chal.id, chal.points)}
-                      className="bg-[#15803d] hover:bg-emerald-800 text-white font-semibold text-[11px] py-1 px-3 rounded-lg transition"
+                      aria-label={`Mark "${chal.title}" challenge as completed`}
+                      className="bg-[#15803d] hover:bg-emerald-800 text-white font-semibold text-[11px] py-1 px-3 rounded-lg transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                     >
                       Complete Action
                     </button>
                   )}
                 </div>
-              </div>
+              </article>
             ))}
 
             {stats.challenges.length === 0 && (
               <div className="bg-white border border-slate-100 rounded-xl p-6 text-center text-slate-400 space-y-2">
-                <HelpCircle className="w-8 h-8 text-slate-300 mx-auto animate-bounce" />
+                <HelpCircle className="w-8 h-8 text-slate-300 mx-auto animate-bounce" aria-hidden="true" />
                 <p className="text-xs leading-normal">
                   No challenges retrieved yet. Trigger challenge generation to get started!
                 </p>
                 <button 
                   onClick={refreshChallenges}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-lg text-xs font-semibold"
+                  aria-label="Generate new eco challenges"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-lg text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                 >
                   Generate Challenges
                 </button>
               </div>
             )}
           </div>
-        </div>
+        </section>
 
       </div>
 

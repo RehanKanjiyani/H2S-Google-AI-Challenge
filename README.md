@@ -12,12 +12,12 @@ Design a solution that helps individuals understand, track, and reduce their car
 
 EcoTrack AI is an AI-powered sustainability platform that helps users:
 
-- Calculate their daily carbon footprint
-- Track environmental impact over time
-- Receive personalized AI-powered reduction suggestions
-- Complete eco-friendly challenges
-- Earn achievements and XP through gamification
-- Visualize sustainability progress through dashboards and analytics
+* Calculate their daily carbon footprint
+* Track environmental impact over time
+* Receive personalized AI-powered reduction suggestions
+* Complete eco-friendly challenges
+* Earn achievements and XP through gamification
+* Visualize sustainability progress through dashboards and analytics
 
 The platform transforms complex carbon emission data into simple, actionable insights that encourage long-term sustainable behavior.
 
@@ -33,94 +33,81 @@ The project focuses on increasing environmental awareness and helping individual
 
 # ✨ Key Features
 
-## 1. Carbon Footprint Calculator
+## Carbon Footprint Calculator
 
-Users can log activities across multiple categories:
+Users can log activities across:
 
-- Transportation
-- Household Energy
-- Food Habits
-- Waste Generation
-- Shopping & Goods
+* Transportation
+* Household Energy
+* Food Habits
+* Waste Generation
+* Shopping & Goods
 
 The system calculates estimated CO₂ emissions using realistic emission coefficients.
 
----
+## AI Sustainability Coach
 
-## 2. AI Sustainability Coach
+Powered by Google Gemini.
 
-Built using Google Gemini.
+Features:
 
-The AI Coach:
+* Personalized sustainability recommendations
+* Carbon reduction strategies
+* Daily eco challenges
+* Behavioral analysis
+* Fallback recommendations when AI is unavailable
 
-- Analyzes user carbon patterns
-- Identifies high-emission behaviors
-- Generates personalized recommendations
-- Suggests practical reduction strategies
-- Creates daily sustainability challenges
+## Sustainability Dashboard
 
-Fallback logic ensures useful recommendations remain available even when AI services are unavailable.
+Provides:
 
----
+* Daily footprint tracking
+* Weekly trends
+* Historical analytics
+* Carbon composition breakdown
+* Personal impact metrics
 
-## 3. Sustainability Dashboard
+## Gamification System
 
-Interactive dashboard displaying:
+Includes:
 
-- Daily carbon footprint
-- Weekly trends
-- Historical tracking
-- Carbon composition breakdown
-- Personal impact metrics
-- Environmental progress indicators
+* XP points
+* Achievement badges
+* Daily challenges
+* Streak tracking
+* Sustainability levels
 
----
+Achievements include:
 
-## 4. Gamification System
+* First Steps
+* Carbon Cutter
+* Transit Crusader
+* Loyal Pioneer
+* Vampire Slayer
 
-Users stay engaged through:
+## Community Impact
 
-- XP points
-- Achievement badges
-- Daily challenges
-- Streak tracking
-- Sustainability levels
-
-Example achievements:
-
-- First Steps
-- Carbon Cutter
-- Transit Crusader
-- Loyal Pioneer
-- Vampire Slayer
-
----
-
-## 5. Community Impact
-
-A leaderboard showcases community participation and sustainability performance while promoting healthy competition.
+A leaderboard encourages engagement and friendly competition through sustainability achievements.
 
 ---
 
 # 🧠 Approach & Logic
 
-The solution follows four main steps:
-
 ### Step 1 — Data Collection
 
-Users log sustainability-related activities.
+Users record daily sustainability activities.
 
 ### Step 2 — Carbon Analysis
 
-A carbon calculation engine converts activity inputs into estimated CO₂ emissions using predefined emission factors.
+The calculation engine converts activities into estimated CO₂ emissions using predefined emission factors.
 
 ### Step 3 — AI Interpretation
 
-Gemini analyzes footprint data and generates personalized recommendations.
+Gemini analyzes user behavior and generates personalized recommendations.
 
 ### Step 4 — Behavior Improvement
 
-Gamification and challenges encourage users to continuously reduce emissions and build sustainable habits.
+Gamification, challenges, and insights motivate long-term sustainable habits.
 
 ---
 
@@ -128,132 +115,120 @@ Gamification and challenges encourage users to continuously reduce emissions and
 
 ## Frontend
 
-- React
-- TypeScript
-- Tailwind CSS
-- Vite
+* React
+* TypeScript
+* Tailwind CSS
+* Vite
 
 ## Backend
 
-- Node.js
-- Express
+* Node.js
+* Express
 
 ## AI
 
-- Google Gemini 3.5 Flash
+* Google Gemini 3.5 Flash
 
 ## Storage
 
-- Browser Local Storage
+* Browser Local Storage
 
 ## Development Tools
 
-- Google AI Studio
-- GitHub
-
----
-
-# 🏗 Project Structure
-
-```text
-src/
- ├── components/
- │   ├── Dashboard.tsx
- │   ├── CarbonCalculator.tsx
- │   ├── AICoach.tsx
- │   ├── CommunityImpact.tsx
- │   └── Gamification.tsx
- │
- ├── utils/
- │   └── carbonCalculator.ts
- │
- ├── App.tsx
- │
-server/
- └── gemini.ts
-```
+* Google AI Studio
+* GitHub
+* Vercel
 
 ---
 
 # 🔄 How the Solution Works
 
-1. User logs daily activities.
-2. Carbon engine calculates CO₂ emissions.
+1. User logs activities.
+2. Carbon engine calculates emissions.
 3. Data is stored locally.
-4. Dashboard visualizes trends and impact.
-5. AI Coach analyzes behavior patterns.
-6. Personalized sustainability suggestions are generated.
-7. Users complete challenges and unlock achievements.
-8. Progress appears on leaderboards and impact reports.
+4. Dashboard visualizes progress.
+5. AI Coach generates recommendations.
+6. Users complete sustainability challenges.
+7. XP and achievements are awarded.
+8. Progress appears in community rankings.
 
 ---
 
-# 🔒 Security Considerations
+# 🔒 Security
 
-- Gemini API key remains server-side
-- No API keys exposed to the client
-- Local-only storage for user activity data
-- No sensitive personal information collected
-- Safe AI response handling with structured outputs
+* API keys remain server-side
+* No sensitive personal information stored
+* Structured AI responses
+* Safe local storage implementation
+* No client-side secret exposure
 
 ---
 
 # ♿ Accessibility
 
-The platform includes:
+The application includes:
 
-- Responsive layouts
-- Mobile-friendly navigation
-- Clear visual hierarchy
-- Color-coded indicators
-- Readable typography
-- Consistent interaction patterns
-
----
-
-# 🧪 Testing
-
-The application was tested for:
-
-### Functional Testing
-
-✅ Carbon calculations
-
-✅ Activity logging
-
-✅ AI recommendations
-
-✅ Achievement unlocking
-
-✅ Leaderboard functionality
+* Responsive layouts
+* Mobile-friendly navigation
+* Semantic HTML landmarks
+* Proper labels for forms
+* Keyboard-accessible controls
+* ARIA support for interactive components
+* Screen-reader-friendly status updates
+* Clear visual hierarchy
 
 ---
 
-### Persistence Testing
+# 🧪 Automated Testing
 
-✅ Data survives page refresh
+EcoTrack AI includes a complete automated testing suite built with **Vitest** and **Happy DOM**.
 
-✅ Historical logs retained
+## Run Tests
 
----
+```bash
+npm test
+```
 
-### Responsive Testing
+## Current Test Results
 
-✅ Desktop
+```text
+Test Files: 3 Passed
+Tests: 29 Passed
+Failures: 0
+```
 
-✅ Tablet
+### Carbon Calculator Tests
 
-✅ Mobile
+* Transportation calculations
+* Fuel-type emission comparisons
+* Shopping emissions
+* Renewable energy offsets
+* Recycling multipliers
+* Sustainability scoring
+
+### Gamification Tests
+
+* Streak calculations
+* Achievement unlocking
+* XP progression
+* Leaderboard ranking
+
+### Persistence Tests
+
+* LocalStorage save/load
+* Corrupted JSON recovery
+* Fallback state generation
+* User profile persistence
 
 ---
 
 # 📈 Assumptions
 
-- Emission coefficients are representative estimates.
-- Users provide honest activity data.
-- Local storage is sufficient for challenge requirements.
-- AI recommendations are advisory and educational.
-- Community leaderboard uses demonstration data for comparison.
+* Emission coefficients are representative estimates.
+* Users provide accurate activity information.
+* Local storage is sufficient for challenge requirements.
+* AI recommendations are educational and advisory.
+* Community leaderboard uses demonstration data.
 
 ---
 
@@ -261,7 +236,7 @@ The application was tested for:
 
 ## Prerequisites
 
-- Node.js
+* Node.js
 
 ## Installation
 
@@ -283,7 +258,7 @@ GEMINI_API_KEY=YOUR_API_KEY
 npm run dev
 ```
 
-Application will run on:
+Application runs at:
 
 ```text
 http://127.0.0.1:3000
@@ -291,16 +266,15 @@ http://127.0.0.1:3000
 
 ---
 
-# 📹 Demo
+# 🌐 Live Demo
 
-Google AI Studio Project:
-
-https://ai.studio/apps/0fd51902-1f44-433d-9d93-a30f41a45d5c
-
----
-Deployed Link:
+**Vercel Deployment**
 
 https://h2-s-google-ai-challenge.vercel.app/
+
+**Google AI Studio Project**
+
+https://ai.studio/apps/0fd51902-1f44-433d-9d93-a30f41a45d5c
 
 ---
 

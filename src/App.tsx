@@ -19,12 +19,15 @@ import {
   Settings,
   HelpCircle
 } from 'lucide-react';
-
-const STORAGE_KEYS = {
-  LOGS: 'ecotrack_logs',
-  STATS: 'ecotrack_stats',
-  USERNAME: 'ecotrack_username'
-};
+import { evaluateAchievementsAndStreaks } from './utils/gamification';
+import { 
+  saveLogs, 
+  loadLogs, 
+  saveStats, 
+  loadStats, 
+  saveUsername, 
+  loadUsername 
+} from './utils/persistence';
 
 const DEFAULT_BADGES: AchievementBadge[] = [
   { id: 'badge-1', title: 'First Steps (Seed)', description: 'Log your first daily carbon footprint card.', iconName: 'seed', unlocked: false, category: 'general' },
@@ -86,8 +89,11 @@ export default function App() {
 
   // 2. Load cached data on mount
   useEffect(() => {
+    // Set document title for accessibility metadata
+    document.title = "EcoTrack AI - Daily Carbon Footprint Tracker";
+
     // Load Nickname
-    const cachedName = localStorage.getItem(STORAGE_KEYS.USERNAME);
+    const cachedName = loadUsername('');
     if (cachedName) {
       setUserName(cachedName);
     } else {
@@ -95,22 +101,22 @@ export default function App() {
     }
 
     // Load Logs
-    const cachedLogs = localStorage.getItem(STORAGE_KEYS.LOGS);
+    const cachedLogs = loadLogs([]);
     let masterLogs: CarbonLog[] = [];
-    if (cachedLogs) {
-      masterLogs = JSON.parse(cachedLogs);
+    if (cachedLogs.length > 0) {
+      masterLogs = cachedLogs;
       setLogs(masterLogs);
     } else {
       // Seed high-fidelity dummy records of 30 days
       masterLogs = createDummyLogs();
       setLogs(masterLogs);
-      localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(masterLogs));
+      saveLogs(masterLogs);
     }
 
     // Load Stats
-    const cachedStats = localStorage.getItem(STORAGE_KEYS.STATS);
-    if (cachedStats) {
-      setStats(JSON.parse(cachedStats));
+    const cachedStats = loadStats({} as any);
+    if (cachedStats.totalPoints !== undefined) {
+      setStats(cachedStats);
     } else {
       // Create initial stats card
       const initialStats: UserStats = {
@@ -123,97 +129,27 @@ export default function App() {
       };
       
       // Check initial badge rules based on seeded logs
-      recalculateBadgesAndStreaks(masterLogs, initialStats);
+      const updatedStats = evaluateAchievementsAndStreaks(masterLogs, initialStats, new Date().toISOString().split('T')[0]);
+      setStats(updatedStats);
+      saveStats(updatedStats);
     }
   }, []);
 
   // Sync back to local storage whenever logs or stats update
   const saveLogsToCache = (newLogs: CarbonLog[]) => {
     setLogs(newLogs);
-    localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(newLogs));
+    saveLogs(newLogs);
   };
 
   const saveStatsToCache = (newStats: UserStats) => {
     setStats(newStats);
-    localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(newStats));
+    saveStats(newStats);
   };
 
   // Helper calculation for Badges and Consistency Streaks
   const recalculateBadgesAndStreaks = (allLogs: CarbonLog[], currentStats: UserStats) => {
-    const updatedStats = { ...currentStats };
     const todayStr = new Date().toISOString().split('T')[0];
-
-    // Compute Streak count
-    // Put logged dates in sorted unique checklist
-    const sortedLoggedDates = Array.from(new Set(allLogs.map(l => l.date)))
-      .sort((a, b) => b.localeCompare(a)); // desc order [today, yesterday, pre-yesterday]
-
-    let streak = 0;
-    if (sortedLoggedDates.length > 0) {
-      let latestDateObj = new Date(sortedLoggedDates[0]);
-      const differenceFromTodayMs = Math.abs(new Date(todayStr).getTime() - latestDateObj.getTime());
-      const differenceDays = Math.ceil(differenceFromTodayMs / (1000 * 60 * 60 * 24));
-
-      // Streak is only active if latest log is today or yesterday
-      if (differenceDays <= 1) {
-        streak = 1;
-        let expectedDate = new Date(latestDateObj);
-        
-        for (let i = 1; i < sortedLoggedDates.length; i++) {
-          expectedDate.setDate(expectedDate.getDate() - 1);
-          const nextDateStr = expectedDate.toISOString().split('T')[0];
-          if (sortedLoggedDates[i] === nextDateStr) {
-            streak++;
-          } else {
-            break;
-          }
-        }
-      }
-    }
-
-    updatedStats.currentStreak = streak;
-    if (streak > updatedStats.highStreak) {
-      updatedStats.highStreak = streak;
-    }
-
-    // Badge Evaluation
-    updatedStats.badges = updatedStats.badges.map(badge => {
-      if (badge.unlocked) return badge; // keep unlocked status
-
-      let unlockThis = false;
-      
-      if (badge.id === 'badge-1' && allLogs.length > 0) {
-        unlockThis = true;
-      }
-      
-      if (badge.id === 'badge-2') {
-        // Any logged entry with <= 12kg of CO2
-        unlockThis = allLogs.some(l => l.co2Breakdown.total <= 12.0 && l.co2Breakdown.total > 0);
-      }
-
-      if (badge.id === 'badge-3' && streak >= 3) {
-        unlockThis = true;
-      }
-
-      if (badge.id === 'badge-5') {
-        // High public transit or car-free traveling logged
-        unlockThis = allLogs.some(l => l.input.transportation.transitKm > 15 || (l.input.transportation.carKm === 0 && l.input.transportation.transitKm > 0));
-      }
-
-      if (badge.id === 'badge-6' && (updatedStats.totalPoints >= 150 || updatedStats.challenges.filter(c => c.completed).length >= 2)) {
-        unlockThis = true;
-      }
-
-      if (unlockThis) {
-        return {
-          ...badge,
-          unlocked: true,
-          unlockedAt: todayStr
-        };
-      }
-      return badge;
-    });
-
+    const updatedStats = evaluateAchievementsAndStreaks(allLogs, currentStats, todayStr);
     saveStatsToCache(updatedStats);
   };
 
@@ -275,19 +211,19 @@ export default function App() {
 
   const handleUpdateUserName = (newName: string) => {
     setUserName(newName);
-    localStorage.setItem(STORAGE_KEYS.USERNAME, newName);
+    saveUsername(newName);
   };
 
   return (
     <div className="min-h-screen bg-[#f7faf6] flex flex-col md:flex-row text-slate-800 antialiased font-sans">
       
       {/* 1. SIDEBAR Navigation */}
-      <aside className="w-full md:w-64 bg-slate-900 text-white flex flex-col justify-between shrink-0 border-r border-slate-800" id="aside-sidebar">
+      <aside className="w-full md:w-64 bg-slate-900 text-white flex flex-col justify-between shrink-0 border-r border-slate-800" id="aside-sidebar" aria-label="Sidebar navigation and user summary">
         <div>
           {/* Brand/App Title */}
           <div className="p-6 flex items-center space-x-3 border-b border-slate-800">
             <div className="p-2 bg-emerald-600 rounded-xl">
-              <Leaf className="w-5 h-5 text-emerald-100" />
+              <Leaf className="w-5 h-5 text-emerald-100" aria-hidden="true" />
             </div>
             <div>
               <h1 className="text-base font-extrabold tracking-tight font-display text-white">EcoTrack AI</h1>
@@ -296,100 +232,105 @@ export default function App() {
           </div>
 
           {/* User profile Quick Bar */}
-          <div className="p-4 bg-slate-800/40 border-b border-slate-800 flex items-center space-x-3">
-            <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center font-bold font-display text-white shadow-xs">
+          <section className="p-4 bg-slate-800/40 border-b border-slate-800 flex items-center space-x-3" aria-label="User Profile">
+            <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center font-bold font-display text-white shadow-xs" aria-hidden="true">
               {userName.slice(0,2).toUpperCase()}
             </div>
             <div>
               <span className="text-xs text-slate-400 block font-medium">Citizen Pioneer</span>
               <strong className="text-xs text-emerald-100 font-bold block leading-tight">{userName}</strong>
-              <div className="flex items-center space-x-1.5 text-[10px] text-amber-500 font-bold mt-0.5">
-                <Flame className="w-3.5 h-3.5 fill-amber-500 stroke-none animate-pulse" />
+              <div className="flex items-center space-x-1.5 text-[10px] text-amber-500 font-bold mt-0.5" aria-label={`Current consistent streak of ${stats.currentStreak} days`}>
+                <Flame className="w-3.5 h-3.5 fill-amber-500 stroke-none animate-pulse" aria-hidden="true" />
                 <span>{stats.currentStreak} Day Streak</span>
               </div>
             </div>
-          </div>
+          </section>
 
           {/* Navigation Links */}
-          <nav className="p-4 space-y-1.5 select-none" id="desktop-routing-links">
+          <nav className="p-4 space-y-1.5" id="desktop-routing-links" role="navigation" aria-label="Desktop primary navigation">
             <button
               onClick={() => setActiveView('dashboard')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition ${
+              aria-current={activeView === 'dashboard' ? 'page' : undefined}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                 activeView === 'dashboard' 
                   ? 'bg-emerald-600 text-white font-bold' 
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <LayoutDashboard className="w-4 h-4" />
+              <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
               <span>Metrics Dashboard</span>
             </button>
 
             <button
               onClick={() => setActiveView('calculator')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition ${
+              aria-current={activeView === 'calculator' ? 'page' : undefined}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                 activeView === 'calculator' 
                   ? 'bg-emerald-600 text-white font-bold' 
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <Calculator className="w-4 h-4" />
+              <Calculator className="w-4 h-4" aria-hidden="true" />
               <span>Carbon Calculator</span>
             </button>
 
             <button
               onClick={() => setActiveView('coach')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition ${
+              aria-current={activeView === 'coach' ? 'page' : undefined}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                 activeView === 'coach' 
                   ? 'bg-emerald-600 text-white font-bold' 
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-4 h-4" aria-hidden="true" />
               <span>AI Coach Feedback</span>
             </button>
 
             <button
               onClick={() => setActiveView('gamification')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition ${
+              aria-current={activeView === 'gamification' ? 'page' : undefined}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                 activeView === 'gamification' 
                   ? 'bg-emerald-600 text-white font-bold' 
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <Award className="w-4 h-4" />
+              <Award className="w-4 h-4" aria-hidden="true" />
               <span>Gamified Badges</span>
             </button>
 
             <button
               onClick={() => setActiveView('community')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition ${
+              aria-current={activeView === 'community' ? 'page' : undefined}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                 activeView === 'community' 
                   ? 'bg-emerald-600 text-white font-bold' 
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <Users className="w-4 h-4" />
+              <Users className="w-4 h-4" aria-hidden="true" />
               <span>Community Impact</span>
             </button>
           </nav>
         </div>
 
         {/* Footnotes */}
-        <div className="p-4 border-t border-slate-800 text-center space-y-2 select-none">
+        <footer className="p-4 border-t border-slate-800 text-center space-y-2 select-none">
           <div className="text-[10px] text-slate-500 font-medium">
             EcoTrack AI Agent Build 1.0.4
           </div>
-        </div>
+        </footer>
       </aside>
 
       {/* 2. MAIN WORKSPACE */}
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0" id="main-content">
         
         {/* Top Header Controls bar */}
-        <header className="bg-white border-b border-slate-100 py-4 px-6 md:px-8 flex items-center justify-between shadow-3xs" id="workspace-top-bar">
+        <header className="bg-white border-b border-slate-100 py-4 px-6 xs:p-4 md:px-8 flex items-center justify-between shadow-3xs xs:flex-col xs:items-start xs:gap-3" id="workspace-top-bar">
           <div className="flex items-center space-x-3">
             <div className="md:hidden p-2 bg-emerald-50 text-[#15803d] rounded-lg">
-              <Leaf className="w-5 h-5" />
+              <Leaf className="w-5 h-5" aria-hidden="true" />
             </div>
             <div>
               <h2 className="text-sm font-bold text-slate-800 capitalize leading-normal">
@@ -399,11 +340,13 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 xs:w-full xs:justify-between xs:px-1">
             {/* Quick date selector */}
             <div className="flex items-center space-x-1.5 bg-slate-50 border border-slate-100 rounded-xl px-3 py-1.5 text-xs text-slate-600">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              <Calendar className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
+              <label htmlFor="top-date-picker" className="sr-only">Choose observation date</label>
               <input 
+                id="top-date-picker"
                 type="date" 
                 className="bg-transparent border-none text-xs font-semibold focus:outline-hidden cursor-pointer"
                 value={selectedDate}
@@ -411,14 +354,14 @@ export default function App() {
               />
             </div>
 
-            <div className="bg-emerald-50 text-[#15803d] font-bold text-xs py-1.5 px-3 rounded-xl border border-emerald-100">
+            <div className="bg-emerald-50 text-[#15803d] font-bold text-xs py-1.5 px-3 rounded-xl border border-emerald-100 shrink-0" aria-label={`Current score is ${stats.totalPoints} Eco Points`}>
               {stats.totalPoints} XP
             </div>
           </div>
         </header>
 
         {/* Dynamic view routing wrapper */}
-        <div className="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-6">
+        <div className="p-6 xs:p-4 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-6" aria-live="polite">
           {activeView === 'dashboard' && (
             <Dashboard 
               logs={logs}
@@ -461,40 +404,45 @@ export default function App() {
         </div>
 
         {/* Mobile Navigation bar */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex justify-around p-3 text-white z-50 select-none">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex justify-around p-3 text-white z-50 shadow-lg" role="navigation" aria-label="Mobile primary navigation">
           <button 
             onClick={() => setActiveView('dashboard')}
-            className={`flex flex-col items-center space-y-0.5 ${activeView === 'dashboard' ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}
+            aria-current={activeView === 'dashboard' ? 'page' : undefined}
+            className={`flex flex-col items-center space-y-0.5 transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-400 p-1.5 ${activeView === 'dashboard' ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}
           >
-            <LayoutDashboard className="w-4 h-4" />
+            <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
             <span className="text-[9px]">Dashboard</span>
           </button>
           <button 
             onClick={() => setActiveView('calculator')}
-            className={`flex flex-col items-center space-y-0.5 ${activeView === 'calculator' ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}
+            aria-current={activeView === 'calculator' ? 'page' : undefined}
+            className={`flex flex-col items-center space-y-0.5 transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-400 p-1.5 ${activeView === 'calculator' ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}
           >
-            <Calculator className="w-4 h-4" />
+            <Calculator className="w-4 h-4" aria-hidden="true" />
             <span className="text-[9px]">Calculator</span>
           </button>
           <button 
             onClick={() => setActiveView('coach')}
-            className={`flex flex-col items-center space-y-0.5 ${activeView === 'coach' ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}
+            aria-current={activeView === 'coach' ? 'page' : undefined}
+            className={`flex flex-col items-center space-y-0.5 transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-400 p-1.5 ${activeView === 'coach' ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-4 h-4" aria-hidden="true" />
             <span className="text-[9px]">AI Coach</span>
           </button>
           <button 
             onClick={() => setActiveView('gamification')}
-            className={`flex flex-col items-center space-y-0.5 ${activeView === 'gamification' ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}
+            aria-current={activeView === 'gamification' ? 'page' : undefined}
+            className={`flex flex-col items-center space-y-0.5 transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-400 p-1.5 ${activeView === 'gamification' ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}
           >
-            <Award className="w-4 h-4" />
+            <Award className="w-4 h-4" aria-hidden="true" />
             <span className="text-[9px]">Badges</span>
           </button>
           <button 
             onClick={() => setActiveView('community')}
-            className={`flex flex-col items-center space-y-0.5 ${activeView === 'community' ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}
+            aria-current={activeView === 'community' ? 'page' : undefined}
+            className={`flex flex-col items-center space-y-0.5 transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-400 p-1.5 ${activeView === 'community' ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}
           >
-            <Users className="w-4 h-4" />
+            <Users className="w-4 h-4" aria-hidden="true" />
             <span className="text-[9px]">Community</span>
           </button>
         </nav>
@@ -502,34 +450,37 @@ export default function App() {
 
       {/* Welcome Setup Nickname Modal */}
       {showWelcomeModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in" id="welcome-modal">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in" id="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-modal-title" aria-describedby="welcome-modal-desc">
           <div className="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full border border-slate-100 space-y-6 relative">
             <button 
               onClick={() => setShowWelcomeModal(false)}
-              className="absolute right-4 top-4 p-1 rounded-lg hover:bg-slate-50 transition text-slate-400"
+              aria-label="Close welcome modal"
+              className="absolute right-4 top-4 p-1 rounded-lg hover:bg-slate-50 transition text-slate-400 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4" aria-hidden="true" />
             </button>
 
             <div className="text-center space-y-2">
               <div className="p-3 bg-emerald-100 rounded-full w-14 h-14 flex items-center justify-center mx-auto text-[#15803d]">
-                <Leaf className="w-8 h-8" />
+                <Leaf className="w-8 h-8" aria-hidden="true" />
               </div>
-              <h3 className="text-base font-extrabold font-display text-slate-800">Welcome to EcoTrack AI</h3>
-              <p className="text-xs text-slate-500 leading-normal">
+              <h3 className="text-base font-extrabold font-display text-slate-800" id="welcome-modal-title">Welcome to EcoTrack AI</h3>
+              <p className="text-xs text-slate-500 leading-normal" id="welcome-modal-desc">
                 Let's setup your sustainability credentials so you can start logging transit habits, meals, and completing custom AI challenges!
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-500 block mb-1">Enter your Eco-Buddy Nickname</label>
+                <label htmlFor="welcome-nickname-input" className="text-xs font-bold text-slate-500 block mb-1">Enter your Eco-Buddy Nickname</label>
                 <input 
+                  id="welcome-nickname-input"
                   type="text" 
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
                   placeholder="e.g. CarbonCutter_007"
-                  className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 font-bold focus:outline-[#10b981]"
+                  className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 font-bold focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                  aria-required="true"
                 />
               </div>
 
@@ -540,7 +491,7 @@ export default function App() {
                     setShowWelcomeModal(false);
                   }
                 }}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition duration-200"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition duration-200 focus:outline-hidden focus-visible:ring-4 focus-visible:ring-emerald-200"
               >
                 Launch Carbon Diary
               </button>

@@ -81,60 +81,84 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
         </div>
 
         {/* Tab Selection */}
-        <div className="flex border-b border-slate-100 space-x-1 overflow-x-auto pb-1Scrollbar p-1 bg-slate-50 rounded-xl">
+        <div 
+          className="flex border-b border-slate-100 space-x-1 overflow-x-auto pb-1Scrollbar p-1 bg-slate-50 rounded-xl"
+          role="tablist"
+          aria-label="Activity input categories"
+        >
           <button
+            id="tab-transport"
+            role="tab"
+            aria-selected={activeTab === 'transport'}
+            aria-controls="pane-transport"
             onClick={() => setActiveTab('transport')}
-            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 ${
+            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
               activeTab === 'transport' 
                 ? 'bg-white text-slate-800 shadow-3xs' 
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <Car className="w-4 h-4 text-indigo-500" />
+            <Car className="w-4 h-4 text-indigo-500" aria-hidden="true" />
             <span>Transportation</span>
           </button>
           <button
+            id="tab-electricity"
+            role="tab"
+            aria-selected={activeTab === 'electricity'}
+            aria-controls="pane-electricity"
             onClick={() => setActiveTab('electricity')}
-            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 ${
+            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
               activeTab === 'electricity' 
                 ? 'bg-white text-slate-800 shadow-3xs' 
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <Zap className="w-4 h-4 text-amber-500" />
+            <Zap className="w-4 h-4 text-amber-500" aria-hidden="true" />
             <span>Electricity</span>
           </button>
           <button
+            id="tab-food"
+            role="tab"
+            aria-selected={activeTab === 'food'}
+            aria-controls="pane-food"
             onClick={() => setActiveTab('food')}
-            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 ${
+            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
               activeTab === 'food' 
                 ? 'bg-white text-slate-800 shadow-3xs' 
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <Utensils className="w-4 h-4 text-emerald-500" />
+            <Utensils className="w-4 h-4 text-emerald-500" aria-hidden="true" />
             <span>Food Habits</span>
           </button>
           <button
+            id="tab-waste"
+            role="tab"
+            aria-selected={activeTab === 'waste'}
+            aria-controls="pane-waste"
             onClick={() => setActiveTab('waste')}
-            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 ${
+            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
               activeTab === 'waste' 
                 ? 'bg-white text-slate-800 shadow-3xs' 
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <Trash2 className="w-4 h-4 text-teal-500" />
+            <Trash2 className="w-4 h-4 text-teal-500" aria-hidden="true" />
             <span>Waste Gen</span>
           </button>
           <button
+            id="tab-shopping"
+            role="tab"
+            aria-selected={activeTab === 'shopping'}
+            aria-controls="pane-shopping"
             onClick={() => setActiveTab('shopping')}
-            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 ${
+            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
               activeTab === 'shopping' 
                 ? 'bg-white text-slate-800 shadow-3xs' 
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <ShoppingBag className="w-4 h-4 text-rose-500" />
+            <ShoppingBag className="w-4 h-4 text-rose-500" aria-hidden="true" />
             <span>Shopping</span>
           </button>
         </div>
@@ -144,19 +168,20 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
           <div className="space-y-6">
             {/* 1. TRANSPORT */}
             {activeTab === 'transport' && (
-              <div className="space-y-4" id="pane-transport">
+              <div className="space-y-4" id="pane-transport" role="tabpanel" aria-labelledby="tab-transport">
                 <div className="flex items-center space-x-2 pb-2 border-b border-slate-50">
-                  <Car className="w-5 h-5 text-indigo-500" />
+                  <Car className="w-5 h-5 text-indigo-500" aria-hidden="true" />
                   <h3 className="text-sm font-semibold text-slate-700">Transit & Car Commutes</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Car Travel (km)</label>
+                    <label htmlFor="car-km-input" className="text-xs font-bold text-slate-500 block mb-1">Car Travel (km)</label>
                     <input 
                       type="number" 
+                      id="car-km-input"
                       min="0"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.transportation.carKm || ''}
                       onChange={(e) => updateTransportation('carKm', parseFloat(e.target.value) || 0)}
                       placeholder="e.g. 15"
@@ -165,9 +190,10 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Engine Fuel Classification</label>
+                    <label htmlFor="fuel-type-select" className="text-xs font-bold text-slate-500 block mb-1">Engine Fuel Classification</label>
                     <select 
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      id="fuel-type-select"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.transportation.fuelType}
                       onChange={(e) => updateTransportation('fuelType', e.target.value as any)}
                     >
@@ -179,11 +205,12 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Public Transit / Trains (km)</label>
+                    <label htmlFor="transit-km-input" className="text-xs font-bold text-slate-500 block mb-1">Public Transit / Trains (km)</label>
                     <input 
                       type="number" 
+                      id="transit-km-input"
                       min="0"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.transportation.transitKm || ''}
                       onChange={(e) => updateTransportation('transitKm', parseFloat(e.target.value) || 0)}
                       placeholder="e.g. 8"
@@ -192,12 +219,13 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Flight Hours Today</label>
+                    <label htmlFor="flight-hrs-input" className="text-xs font-bold text-slate-500 block mb-1">Flight Hours Today</label>
                     <input 
                       type="number" 
+                      id="flight-hrs-input"
                       min="0"
                       step="0.5"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.transportation.flightHrs || ''}
                       onChange={(e) => updateTransportation('flightHrs', parseFloat(e.target.value) || 0)}
                       placeholder="e.g. 1.5"
@@ -210,31 +238,33 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
 
             {/* 2. ELECTRICITY */}
             {activeTab === 'electricity' && (
-              <div className="space-y-4" id="pane-electricity">
+              <div className="space-y-4" id="pane-electricity" role="tabpanel" aria-labelledby="tab-electricity">
                 <div className="flex items-center space-x-2 pb-2 border-b border-slate-50">
-                  <Zap className="w-5 h-5 text-amber-500" />
+                  <Zap className="w-5 h-5 text-amber-500" aria-hidden="true" />
                   <h3 className="text-sm font-semibold text-slate-700">Residential Grid Energy Draw</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Electricity Used Today (kWh)</label>
+                    <label htmlFor="electricity-kwh-input" className="text-xs font-bold text-slate-500 block mb-1">Electricity Used Today (kWh)</label>
                     <input 
                       type="number" 
+                      id="electricity-kwh-input"
                       min="0"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.electricity.kwh || ''}
                       onChange={(e) => updateElectricity('kwh', parseFloat(e.target.value) || 0)}
                       placeholder="e.g. 10 (average US home uses ~30 kWh)"
                     />
-                    <span className="text-[10px] text-slate-400 mt-1 block block">Check your smart electricity tracker or energy bill.</span>
+                    <span className="text-[10px] text-slate-400 mt-1 block">Check your smart electricity tracker or energy bill.</span>
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Renewables or Green Contract (%)</label>
+                    <label htmlFor="renewable-pct-slider" className="text-xs font-bold text-slate-500 block mb-1">Renewables or Green Contract (%)</label>
                     <div className="space-y-2 mt-2">
                       <input 
                         type="range" 
+                        id="renewable-pct-slider"
                         min="0" 
                         max="100" 
                         className="w-full sm:accent-emerald-600 block accent-emerald-500 cursor-pointer"
@@ -253,19 +283,20 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
 
             {/* 3. FOOD HABITS */}
             {activeTab === 'food' && (
-              <div className="space-y-4" id="pane-food">
+              <div className="space-y-4" id="pane-food" role="tabpanel" aria-labelledby="tab-food">
                 <div className="flex items-center space-x-2 pb-2 border-b border-slate-50">
-                  <Utensils className="w-5 h-5 text-emerald-500" />
+                  <Utensils className="w-5 h-5 text-emerald-500" aria-hidden="true" />
                   <h3 className="text-sm font-semibold text-slate-700">Daily Food & Meal Preferences</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Meat-Heavy Meals</label>
+                    <label htmlFor="meat-meals-input" className="text-xs font-bold text-slate-500 block mb-1">Meat-Heavy Meals</label>
                     <input 
                       type="number" 
+                      id="meat-meals-input"
                       min="0"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.food.meatMeals || ''}
                       onChange={(e) => updateFood('meatMeals', parseInt(e.target.value) || 0)}
                       placeholder="Beef, chicken, pork, etc."
@@ -274,11 +305,12 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Vegetarian Meals</label>
+                    <label htmlFor="veg-meals-input" className="text-xs font-bold text-slate-500 block mb-1">Vegetarian Meals</label>
                     <input 
                       type="number" 
+                      id="veg-meals-input"
                       min="0"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.food.vegMeals || ''}
                       onChange={(e) => updateFood('vegMeals', parseInt(e.target.value) || 0)}
                       placeholder="Cheese/egg but no meat"
@@ -286,11 +318,12 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Vegan Meals</label>
+                    <label htmlFor="vegan-meals-input" className="text-xs font-bold text-slate-500 block mb-1">Vegan Meals</label>
                     <input 
                       type="number" 
+                      id="vegan-meals-input"
                       min="0"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.food.veganMeals || ''}
                       onChange={(e) => updateFood('veganMeals', parseInt(e.target.value) || 0)}
                       placeholder="Pure plants, grains, legumes"
@@ -299,10 +332,11 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
                 </div>
 
                 <div className="pt-2">
-                  <label className="text-xs font-bold text-slate-500 block mb-1">What percentage was sourced locally? (Under 100km)</label>
+                  <label htmlFor="local-food-slider" className="text-xs font-bold text-slate-500 block mb-1">What percentage was sourced locally? (Under 100km)</label>
                   <div className="space-y-1">
                     <input 
                       type="range" 
+                      id="local-food-slider"
                       min="0" 
                       max="100" 
                       className="w-full accent-emerald-500 cursor-pointer"
@@ -320,20 +354,21 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
 
             {/* 4. WASTE */}
             {activeTab === 'waste' && (
-              <div className="space-y-4" id="pane-waste">
+              <div className="space-y-4" id="pane-waste" role="tabpanel" aria-labelledby="tab-waste">
                 <div className="flex items-center space-x-2 pb-2 border-b border-slate-50">
-                  <Trash2 className="w-5 h-5 text-teal-500" />
+                  <Trash2 className="w-5 h-5 text-teal-500" aria-hidden="true" />
                   <h3 className="text-sm font-semibold text-slate-700">Waste Generation & Compost</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Organic Waste Generated (kg)</label>
+                    <label htmlFor="organic-waste-input" className="text-xs font-bold text-slate-500 block mb-1">Organic Waste Generated (kg)</label>
                     <input 
                       type="number" 
+                      id="organic-waste-input"
                       min="0"
                       step="0.1"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.waste.organicKg || ''}
                       onChange={(e) => updateWaste('organicKg', parseFloat(e.target.value) || 0)}
                       placeholder="e.g. 0.8"
@@ -342,12 +377,13 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Non-recyclable / Landfill (kg)</label>
+                    <label htmlFor="non-recyclable-waste-input" className="text-xs font-bold text-slate-500 block mb-1">Non-recyclable / Landfill (kg)</label>
                     <input 
                       type="number" 
+                      id="non-recyclable-waste-input"
                       min="0"
                       step="0.1"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.waste.nonRecyclableKg || ''}
                       onChange={(e) => updateWaste('nonRecyclableKg', parseFloat(e.target.value) || 0)}
                       placeholder="e.g. 0.4"
@@ -355,10 +391,11 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
                   </div>
 
                   <div className="md:col-span-2 pt-2">
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Estimated Recycling Rate (%)</label>
+                    <label htmlFor="waste-recycled-slider" className="text-xs font-bold text-slate-500 block mb-1">Estimated Recycling Rate (%)</label>
                     <div className="space-y-1">
                       <input 
                         type="range" 
+                        id="waste-recycled-slider"
                         min="0" 
                         max="100" 
                         className="w-full accent-teal-600 block cursor-pointer"
@@ -377,19 +414,20 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
 
             {/* 5. SHOPPING */}
             {activeTab === 'shopping' && (
-              <div className="space-y-4" id="pane-shopping">
+              <div className="space-y-4" id="pane-shopping" role="tabpanel" aria-labelledby="tab-shopping">
                 <div className="flex items-center space-x-2 pb-2 border-b border-slate-50">
-                  <ShoppingBag className="w-5 h-5 text-rose-500" />
+                  <ShoppingBag className="w-5 h-5 text-rose-500" aria-hidden="true" />
                   <h3 className="text-sm font-semibold text-slate-700">Luxury Shopping & Consumer Purchases</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Clothing Items Bought</label>
+                    <label htmlFor="clothing-items-input" className="text-xs font-bold text-slate-500 block mb-1">Clothing Items Bought</label>
                     <input 
                       type="number" 
+                      id="clothing-items-input"
                       min="0"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.shopping.clothingItems || ''}
                       onChange={(e) => updateShopping('clothingItems', parseInt(e.target.value) || 0)}
                       placeholder="e.g. 0"
@@ -398,11 +436,12 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">Electronics Items Bought</label>
+                    <label htmlFor="electronics-items-input" className="text-xs font-bold text-slate-500 block mb-1">Electronics Items Bought</label>
                     <input 
                       type="number" 
+                      id="electronics-items-input"
                       min="0"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.shopping.electronicsItems || ''}
                       onChange={(e) => updateShopping('electronicsItems', parseInt(e.target.value) || 0)}
                       placeholder="e.g. 0"
@@ -411,11 +450,12 @@ export default function CarbonCalculator({ onSaveLog, selectedDate, currentLogFo
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-slate-500 block mb-1">General Purchases / Furniture</label>
+                    <label htmlFor="general-items-input" className="text-xs font-bold text-slate-500 block mb-1">General Purchases / Furniture</label>
                     <input 
                       type="number" 
+                      id="general-items-input"
                       min="0"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-[#10b981]"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-xs text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                       value={input.shopping.generalItems || ''}
                       onChange={(e) => updateShopping('generalItems', parseInt(e.target.value) || 0)}
                       placeholder="e.g. 1"

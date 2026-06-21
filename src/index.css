@@ -14,3 +14,71 @@ body {
 h1, h2, h3, h4 {
   font-family: var(--font-display);
 }
+
+@media (max-width: 479px) {
+  .xs\:flex-col {
+    flex-direction: column !important;
+  }
+  .xs\:items-start {
+    align-items: flex-start !important;
+  }
+  .xs\:justify-start {
+    justify-content: flex-start !important;
+  }
+  .xs\:gap-1 {
+    gap: 0.25rem !important;
+  }
+  .xs\:gap-1\.5 {
+    gap: 0.375rem !important;
+  }
+  .xs\:gap-2 {
+    gap: 0.5rem !important;
+  }
+  .xs\:gap-3 {
+    gap: 0.75rem !important;
+  }
+  .xs\:gap-4 {
+    gap: 1rem !important;
+  }
+  .xs\:p-4 {
+    padding: 1rem !important;
+  }
+  .xs\:px-4 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  .xs\:text-2xl {
+    font-size: 1.5rem !important;
+  }
+  .xs\:text-xl {
+    font-size: 1.25rem !important;
+  }
+  .xs\:text-sm {
+    font-size: 0.875rem !important;
+  }
+  .xs\:text-xs {
+    font-size: 0.75rem !important;
+  }
+  .xs\:text-\[10px\] {
+    font-size: 10px !important;
+  }
+  .xs\:text-\[11px\] {
+    font-size: 11px !important;
+  }
+  .xs\:w-full {
+    width: 100% !important;
+  }
+  .xs\:h-auto {
+    height: auto !important;
+  }
+  .xs\:pl-5 {
+    padding-left: 1.25rem !important;
+  }
+  .xs\:space-x-3 {
+    margin-left: 0 !important;
+    gap: 0.75rem !important;
+  }
+  .xs\:justify-between {
+    justify-content: space-between !important;
+  }
+}

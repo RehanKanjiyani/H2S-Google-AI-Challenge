@@ -80,21 +80,33 @@ export default function Dashboard({
   return (
     <div className="space-y-6" id="dashboard-root">
       {/* Upper Status summary block */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 xs:gap-4">
         {/* Daily Score Circle Card */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs flex flex-col justify-between" id="daily-score-card">
-          <div className="flex items-center justify-between">
+        <div 
+          className="bg-white rounded-2xl p-6 xs:p-4 border border-slate-100 shadow-xs flex flex-col justify-between" 
+          id="daily-score-card"
+          role="region"
+          aria-label={`Daily Footprint status. Selected date is ${selectedDate}. Total logged footprint is ${currentTotal} kilograms CO2 equivalent.`}
+        >
+          <div className="flex items-center justify-between xs:flex-col xs:items-start xs:gap-1.5">
             <span className="text-slate-500 text-sm font-medium">Daily Footprint</span>
-            <div className="flex items-center space-x-1.5 text-xs text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full">
-              <Calendar className="w-3.5 h-3.5" />
+            <div className="flex items-center space-x-1.5 text-xs xs:text-[11px] text-slate-400 bg-slate-50 px-2.5 py-1 xs:px-2 xs:py-0.5 rounded-full shrink-0">
+              <Calendar className="w-3.5 h-3.5" aria-hidden="true" />
               <span>{selectedDate}</span>
             </div>
           </div>
 
           <div className="my-6 flex flex-col items-center justify-center relative">
             {selectedLog ? (
-              <>
-                <svg className="w-36 h-36 transform -rotate-90">
+              <div 
+                role="progressbar" 
+                aria-valuenow={currentTotal} 
+                aria-valuemin={0} 
+                aria-valuemax={Math.max(CO2_GOAL_DAILY * 2, currentTotal)} 
+                aria-valuetext={`${currentTotal} kilograms CO2 equivalent. Out of ${CO2_GOAL_DAILY} kilograms target limit.`}
+                className="relative flex items-center justify-center"
+              >
+                <svg className="w-36 h-36 transform -rotate-90" aria-hidden="true">
                   {/* Background Circle */}
                   <circle
                     cx="72"
@@ -119,17 +131,17 @@ export default function Dashboard({
                   />
                 </svg>
                 {/* Center label */}
-                <div className="absolute text-center">
+                <div className="absolute text-center" aria-hidden="true">
                   <span className="text-3xl font-bold font-display text-slate-800">{currentTotal}</span>
                   <span className="text-xs text-slate-400 block font-medium">kg CO2e</span>
                 </div>
-              </>
+              </div>
             ) : (
               <div className="h-36 flex flex-col items-center justify-center text-center">
-                <Leaf className="w-10 h-10 text-slate-300 animate-bounce mb-2" />
+                <Leaf className="w-10 h-10 text-slate-300 animate-bounce mb-2" aria-hidden="true" />
                 <button 
                   onClick={onNavigateToCalculator}
-                  className="text-xs bg-emerald-50 text-[#15803d] hover:bg-emerald-100 transition px-3 py-1.5 rounded-lg font-semibold"
+                  className="text-xs bg-emerald-50 text-[#15803d] hover:bg-emerald-100 transition px-3 py-1.5 rounded-lg font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
                 >
                   Log Carbon Today
                 </button>
@@ -154,61 +166,79 @@ export default function Dashboard({
         </div>
 
         {/* Community & Personal Savings Stats */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs flex flex-col justify-between" id="ecological-impact-card">
+        <div 
+          className="bg-white rounded-2xl p-6 xs:p-4 border border-slate-100 shadow-xs flex flex-col justify-between" 
+          id="ecological-impact-card"
+          role="region"
+          aria-label={`Personal Ecological Impact: Saved ${co2SavedTotal.toFixed(1)} kilograms carbon dioxide equivalent total. This equates to conserving approximately ${treesSavedEstimate} mature trees.`}
+        >
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between xs:flex-col xs:items-start xs:gap-1.5">
               <span className="text-slate-500 text-sm font-medium">Personal Impact</span>
-              <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+              <span className="text-xs xs:text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 xs:px-2 xs:py-0.5 rounded-full shrink-0">
                 Saved {co2SavedTotal.toFixed(1)} kg CO2e Total
               </span>
             </div>
 
-            <div className="mt-6 flex items-center space-x-4">
-              <div className="p-3.5 bg-emerald-100 rounded-2xl text-[#15803d]">
+            <div className="mt-6 flex items-center space-x-4 xs:space-x-3">
+              <div className="p-3.5 bg-emerald-100 rounded-2xl text-[#15803d] shrink-0" aria-hidden="true">
                 <TreePine className="w-8 h-8" />
               </div>
-              <div>
-                <span className="text-3xl font-display font-bold text-slate-800">{treesSavedEstimate}</span>
-                <span className="text-slate-400 text-xs ml-1 font-medium">mature trees</span>
-                <p className="text-slate-500 text-xs mt-1">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline flex-wrap gap-x-1">
+                  <span className="text-3xl xs:text-2xl font-display font-bold text-slate-800 leading-none">{treesSavedEstimate}</span>
+                  <span className="text-slate-400 text-xs xs:text-[11px] font-medium leading-none">mature trees</span>
+                </div>
+                <p className="text-slate-500 text-xs xs:text-[11px] mt-1.5 leading-normal">
                   Estimated trees that would need to expand for a year to capture your saved carbon footprint logs.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between text-xs text-slate-500">
+          <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between text-xs xs:text-[11px] text-slate-500 xs:flex-col xs:items-start xs:gap-1">
             <div className="flex items-center space-x-1">
-              <TrendingDown className="w-4 h-4 text-emerald-500" />
+              <TrendingDown className="w-4 h-4 text-emerald-500 shrink-0" aria-hidden="true" />
               <span>Your Avg: <strong>{averageDailyFootprint} kg</strong></span>
             </div>
-            <span>Global Avg: ~16 kg</span>
+            <span className="xs:pl-5">Global Avg: ~16 kg</span>
           </div>
         </div>
 
         {/* Active Streaks and Achievements summary */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs flex flex-col justify-between" id="streak-summary-card">
+        <div 
+          className="bg-white rounded-2xl p-6 xs:p-4 border border-slate-100 shadow-xs flex flex-col justify-between" 
+          id="streak-summary-card"
+          role="region"
+          aria-label={`Gamification statistics: active streak is ${currentStreak} days, total points are ${stats.totalPoints} Eco Points.`}
+        >
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between xs:flex-col xs:items-start xs:gap-1.5">
               <span className="text-slate-500 text-sm font-medium">Gamification Stats</span>
-              <div className="flex items-center space-x-1 text-xs text-amber-600 font-semibold bg-amber-50 px-2.5 py-1 rounded-full">
-                <Flame className="w-3.5 h-3.5 fill-amber-500 stroke-none" />
-                <span>{currentStreak} Day Streak</span>
+              <div 
+                className="flex items-center space-x-1 text-xs xs:text-[11px] text-amber-600 font-semibold bg-amber-50 px-2.5 py-1 xs:px-2 xs:py-0.5 rounded-full shrink-0"
+                aria-label={`Current consistent streak of ${currentStreak} days`}
+              >
+                <Flame className="w-3.5 h-3.5 fill-amber-500 stroke-none shrink-0" aria-hidden="true" />
+                <span className="whitespace-nowrap">{currentStreak} Day Streak</span>
               </div>
             </div>
 
             <div className="mt-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-2xl font-bold font-display text-slate-800">{stats.totalPoints}</span>
-                  <span className="text-slate-400 text-xs ml-2 font-medium">Eco Points</span>
+              <div className="flex items-center justify-between xs:gap-3">
+                <div className="shrink-0" aria-label={`Current score: ${stats.totalPoints} Eco Points`}>
+                  <span className="text-2xl xs:text-xl font-bold font-display text-slate-800">{stats.totalPoints}</span>
+                  <span className="text-slate-400 text-xs xs:text-[11px] ml-2 font-medium">Eco Points</span>
                 </div>
-                <div className="flex -space-x-2">
+                <div className="flex -space-x-2 shrink-0" aria-label="Recent unlocked achievement badges">
                   {stats.badges.filter(b => b.unlocked).slice(0, 3).map((badge) => (
                     <div 
                       key={badge.id}
                       title={badge.title} 
-                      className="w-8 h-8 rounded-full bg-linear-to-tr from-yellow-300 to-amber-500 border-2 border-white flex items-center justify-center text-xs text-amber-950 font-bold shadow-xs cursor-pointer"
+                      className="w-8 h-8 rounded-full bg-linear-to-tr from-yellow-300 to-amber-500 border-2 border-white flex items-center justify-center text-xs text-amber-950 font-bold shadow-xs cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                      role="img"
+                      aria-label={`Badge unlocked: ${badge.title}. Description: ${badge.description}`}
+                      tabIndex={0}
                     >
                       🏅
                     </div>
@@ -219,8 +249,8 @@ export default function Dashboard({
                 </div>
               </div>
 
-              <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 flex items-center space-x-3">
-                <Sparkles className="w-5 h-5 text-amber-500 shrink-0" />
+              <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 flex items-center space-x-3 font-sans">
+                <Sparkles className="w-5 h-5 text-amber-500 shrink-0" aria-hidden="true" />
                 <div>
                   <h4 className="text-xs font-semibold text-slate-700">Daily Tip</h4>
                   <p className="text-[11px] text-slate-500 leading-normal">
@@ -233,20 +263,25 @@ export default function Dashboard({
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
-            <span className="text-xs text-slate-400">Streak Record: {stats.highStreak} days</span>
-            <span className="text-xs text-emerald-600 font-semibold">Level {Math.floor(stats.totalPoints / 200) + 1} eco-pioneer</span>
+          <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between xs:flex-col xs:items-start xs:gap-1 font-sans">
+            <span className="text-xs xs:text-[11px] text-slate-400">Streak Record: {stats.highStreak} days</span>
+            <span className="text-xs xs:text-[11px] text-emerald-600 font-semibold" aria-label={`Current level is level ${Math.floor(stats.totalPoints / 200) + 1} eco pioneer`}>Level {Math.floor(stats.totalPoints / 200) + 1} eco-pioneer</span>
           </div>
         </div>
       </div>
 
       {/* Selected date breakdown categories */}
       <h3 className="text-lg font-semibold text-slate-800 pt-2 flex items-center space-x-2 font-display">
-        <Leaf className="w-5 h-5 text-emerald-500" />
+        <Leaf className="w-5 h-5 text-emerald-500" aria-hidden="true" />
         <span>Carbon Composition Breakdown</span>
       </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4" id="categories-breakdown-row">
+      <div 
+        className="grid grid-cols-1 md:grid-cols-5 gap-4" 
+        id="categories-breakdown-row"
+        role="region"
+        aria-label="Daily carbon composition categories section"
+      >
         {categoriesMap.map((cat) => {
           const value = selectedLog 
             ? (selectedLog.co2Breakdown[cat.key as keyof typeof selectedLog.co2Breakdown] as number) 
@@ -256,10 +291,12 @@ export default function Dashboard({
           return (
             <div 
               key={cat.key} 
-              className={`bg-white rounded-xl p-4 border border-slate-100 shadow-2xs hover:shadow-xs transition duration-200 flex flex-col justify-between`}
+              className="bg-white rounded-xl p-4 border border-slate-100 shadow-2xs hover:shadow-xs transition duration-200 flex flex-col justify-between"
+              role="img"
+              aria-label={`${cat.label} category represents ${value} kilograms of CO2 equivalent, taking up ${share}% of today's footprint.`}
             >
               <div className="flex items-center justify-between mb-3">
-                <div className={`p-2 rounded-lg ${cat.color}`}>
+                <div className={`p-2 rounded-lg ${cat.color}`} aria-hidden="true">
                   <cat.icon className="w-4 h-4" />
                 </div>
                 <span className="text-[10px] bg-slate-50 px-2 py-0.5 rounded-full font-bold text-slate-500">
@@ -271,7 +308,7 @@ export default function Dashboard({
                 <span className="text-xl font-bold font-display text-slate-800">{value}</span>
                 <span className="text-[10px] text-slate-400 ml-1">kg CO2e</span>
               </div>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mt-3">
+              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mt-3" aria-hidden="true">
                 <div 
                   className={`h-full ${share > 40 ? 'bg-rose-400' : 'bg-emerald-400'}`} 
                   style={{ width: `${share}%` }} 
@@ -285,14 +322,19 @@ export default function Dashboard({
       {/* Main Charts block */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
         {/* Weekly Trend Bar Chart */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs lg:col-span-2" id="weekly-trend-chart-card">
+        <div 
+          className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs lg:col-span-2" 
+          id="weekly-trend-chart-card"
+          role="region"
+          aria-label={`Weekly metrics trend chart showing footprint over the last 7 logged days limit is ${CO2_GOAL_DAILY} kilograms.`}
+        >
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-base font-semibold text-slate-800 font-display">Weekly Metrics Trend</h3>
-              <p className="text-xs text-slate-400">Footprint logs over the last 7 logged days</p>
+              <p className="text-xs text-slate-400">Footprint logs over the last 7 logged days (keyboard navigable)</p>
             </div>
             <div className="flex items-center space-x-1.5 text-xs text-slate-400 font-semibold bg-slate-50 px-3 py-1 rounded-full">
-              <TrendingDown className="w-3.5 h-3.5 text-emerald-500" />
+              <TrendingDown className="w-3.5 h-3.5 text-emerald-500" aria-hidden="true" />
               <span>Target Limit: {CO2_GOAL_DAILY}kg</span>
             </div>
           </div>
@@ -310,8 +352,18 @@ export default function Dashboard({
                 return (
                   <div 
                     key={log.date} 
-                    className="flex-1 flex flex-col items-center group cursor-pointer"
+                    className="flex-1 flex flex-col items-center group cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-lg p-1"
                     onClick={() => onSelectDate(log.date)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelectDate(log.date);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Show breakdown for ${dayLabel} ${dateString}: ${total} kilograms carbon dioxide equivalent. ${total > CO2_GOAL_DAILY ? 'Exceeds' : 'Within'} target limit.`}
+                    aria-pressed={isSelected}
                   >
                     {/* Tooltip on hover */}
                     <div className="opacity-0 group-hover:opacity-100 absolute bg-slate-900 text-slate-50 text-[10px] font-bold px-2.5 py-1.5 rounded-lg -translate-y-12 transition duration-200 pointer-events-none z-10 text-center shadow-md">
@@ -320,7 +372,7 @@ export default function Dashboard({
                     </div>
 
                     {/* Grid Target reference line segment wrapper */}
-                    <div className="w-full relative h-48 flex items-end justify-center mb-2">
+                    <div className="w-full relative h-48 flex items-end justify-center mb-2" aria-hidden="true">
                       {/* Interactive block bar */}
                       <div 
                         className={`w-full max-w-[32px] rounded-t-md transition-all duration-300 ${
@@ -353,7 +405,7 @@ export default function Dashboard({
               </div>
             )}
           </div>
-          <div className="flex items-center justify-center space-x-6 text-xs mt-3 select-none">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs mt-3 select-none xs:text-[11px]">
             <span className="flex items-center space-x-1.5">
               <span className="w-3 h-3 bg-emerald-500 rounded-xs" />
               <span className="text-slate-500">Under Daily Target</span>
