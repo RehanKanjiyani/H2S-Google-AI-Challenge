@@ -247,6 +247,22 @@ The application was tested for:
 
 ---
 
+## Manual Testing
+
+The application was manually tested for:
+
+- Carbon calculations
+- Data persistence
+- Dashboard analytics
+- AI Coach functionality
+- Achievement system
+- Leaderboard functionality
+- Mobile responsiveness
+
+QA Score: 8.6/10
+
+---
+
 # 📈 Assumptions
 
 - Emission coefficients are representative estimates.
