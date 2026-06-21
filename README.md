@@ -298,6 +298,11 @@ Google AI Studio Project:
 https://ai.studio/apps/0fd51902-1f44-433d-9d93-a30f41a45d5c
 
 ---
+Deployed Link:
+
+https://h2-s-google-ai-challenge.vercel.app/
+
+---
 
 # 👨‍💻 Author
 
